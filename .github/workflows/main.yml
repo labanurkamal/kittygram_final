@@ -182,19 +182,19 @@ jobs:
             sudo docker compose -f docker-compose.production.yml up -d
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
-  # send_message:
-  #   name: Send a message when deploy is successful
-  #   runs-on: ubumtu-latest
-  #   needs:
-  #     - deploy
+  send_message:
+    name: Send a message when deploy is successful
+    runs-on: ubumtu-latest
+    needs:
+      - deploy
     
-  #   steps:
-  #     -
-  #       name: Send message
-  #       uses: appleboy/telegram-action@master
-  #       with:
-  #         to: ${{ secrets.TELEGRAM_ID }}
-  #         message: Kittygram Деплой успешно выполнен!.
-  #                  Автор ${{ GITHUB_ACTOR }},
-  #                  Сообщение коммита ${{ GITHUB_EVENT.commits[0].message }},
-  #                  Ссылка на коммит https://github.com/${{GITHUB_REPOSITORY}}/commit/${{GITHUB_SHA}}
+    steps:
+      -
+        name: Send message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_ID }}
+          message: Kittygram Деплой успешно выполнен!.
+                   Автор ${{ GITHUB_ACTOR }},
+                   Сообщение коммита ${{ GITHUB_EVENT.commits[0].message }},
+                   Ссылка на коммит https://github.com/${{GITHUB_REPOSITORY}}/commit/${{GITHUB_SHA}}
