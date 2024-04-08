@@ -8,7 +8,9 @@ jobs:
   backend_test:
     name: Check Python Test
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10]
     services:
       postgres:
         image: postgres:13.10
@@ -27,7 +29,7 @@ jobs:
         name: Set Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.python-version }}
       -
         name: Install dependencies
         run: |
@@ -184,8 +186,7 @@ jobs:
             sudo docker compose -f docker-compose.production.yml down
             sudo docker compose -f docker-compose.production.yml up -d
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
-            sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
-            sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/static/. /static/static/
+            sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
   send_message:
     name: Send a message when deploy is successful
     runs-on: ubumtu-latest
@@ -198,5 +199,7 @@ jobs:
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_ID }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: Kittygram деплой успешно выполнен!        
+          message: Kittygram Деплой успешно выполнен!.
+                   Автор ${{ GITHUB_ACTOR }},
+                   Сообщение коммита ${{ GITHUB_EVENT.commits[0].message }},
+                   Ссылка на коммит https://github.com/${{GITHUB_REPOSITORY}}/commit/${{GITHUB_SHA}}
